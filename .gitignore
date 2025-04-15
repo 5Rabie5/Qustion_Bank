@@ -1,0 +1,32 @@
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Maven ###
+target/
+log/
+logs/
+
+### OS Files ###
+.DS_Store
+Thumbs.db
+
+### Environment files ###
+.env
+*.log
+
+### VS Code (if used) ###
+.vscode/
+
+### Others ###
+HELP.md
