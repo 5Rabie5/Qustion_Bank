@@ -1,4 +1,4 @@
-package kirche.website.configuration;
+package at.questionbank.qustion_bank.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
