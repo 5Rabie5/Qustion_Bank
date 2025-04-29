@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/api/question")
 @RequiredArgsConstructor
 public class QuestionEndpoint {
 
@@ -17,16 +17,34 @@ public class QuestionEndpoint {
     private final IdIdsAccumulationManager idsAccumulationManager;
 
 
-    @GetMapping
-    public List<Question> getQuestions(
-            @RequestParam(required = false) String sprache,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String tag,
-            @RequestParam(required = false) Integer type,
-            @RequestParam(required = false) Integer difficulty,
-            @RequestParam(required = false) Integer status) {
-        return questionManger.getQuestions(sprache, category, tag, type, difficulty, status);
-    }
+//    @GetMapping
+//    public List<Question> getQuestions(
+//            @RequestParam(required = false) String sprache,
+//            @RequestParam(required = false) String category,
+//            @RequestParam(required = false) String tag,
+//            @RequestParam(required = false) Integer type,
+//            @RequestParam(required = false) Integer difficulty,
+//            @RequestParam(required = false) Integer status) {
+//        return questionManger.getQuestions(sprache, category, tag, type, difficulty, status);
+//    }
+@GetMapping
+public List<Question> getQuestions(
+        @RequestParam(required = false) String sprache,       // from frontend: language
+        @RequestParam(required = false) String category,      // could be comma-separated list
+        @RequestParam(required = false) String tag,
+        @RequestParam(required = false) Integer type,
+        @RequestParam(required = false) Integer difficulty,
+        @RequestParam(required = false) Integer status) {
+
+    return questionManger.getQuestions(
+            sprache,
+            category,
+            tag,
+            type,
+            difficulty,
+            status
+    );
+}
     @PostMapping("/all")
     public void saveAll(@RequestBody Question[] questions) {
         questionManger.saveAll(questions);

@@ -5,10 +5,7 @@ import at.questionbank.qustion_bank.persistence.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -18,16 +15,50 @@ public class QuestionManger {
 
     private final QuestionRepository questionRepository;
 
-    public List<Question> getQuestions(String sprache, String category, String tag, Integer type, Integer difficulty, Integer status) {
-        return questionRepository.findAll().stream()
-                .filter(e -> sprache == null || e.getSprache().equalsIgnoreCase(sprache))
-                .filter(e -> category == null || e.getCategory().equalsIgnoreCase(category))
-                .filter(e -> tag == null || e.getTag().equalsIgnoreCase(tag))
-                .filter(e -> type == null || Objects.equals(e.getType(), type))
-                .filter(e -> difficulty == null || Objects.equals(e.getDifficulty(), difficulty))
-                .filter(e -> status == null || Objects.equals(e.getStatus(), status))
-                .collect(Collectors.toList());
+    public List<Question> getQuestions(
+            String sprache,
+            String category,
+            String tag,
+            Integer type,
+            Integer difficulty,
+            Integer status) {
+
+        System.out.println("Filter received -> sprache=" + sprache + ", category=" + category + ", type=" + type);
+
+        List<Question> allQuestions = questionRepository.findAll();
+        List<Question> filtered = new ArrayList<>();
+
+        for (Question q : allQuestions) {
+            boolean match = true;
+
+            if (sprache != null && !q.getSprache().equalsIgnoreCase(sprache)) {
+                match = false;
+            }
+            if (category != null && !(String.valueOf(q.getCategory()).equals(category))) {
+                match = false;
+            }
+            if (tag != null && (q.getTag() == null || !q.getTag().equalsIgnoreCase(tag))) {
+                match = false;
+            }
+            if (type != null && !Objects.equals(q.getType(), type)) {
+                match = false;
+            }
+            if (difficulty != null && !Objects.equals(q.getDifficulty(), difficulty)) {
+                match = false;
+            }
+            if (status != null && !Objects.equals(q.getStatus(), status)) {
+                match = false;
+            }
+
+            if (match) {
+                filtered.add(q);
+            }
+        }
+
+        return filtered;
     }
+
+
 
     public Question save(Question question) {
         return questionRepository.save(question);
@@ -48,7 +79,6 @@ public class QuestionManger {
     public Question updatedQuestion(Question uQuestion) {
         Question existingQuestion = questionRepository.findById(uQuestion.getId())
                 .orElseThrow(() -> new NoSuchElementException("Question not found with ID: " + uQuestion.getId()));
-
 
         updateIfNotNull(existingQuestion::setQuestion, uQuestion.getQuestion());
         updateIfNotNull(existingQuestion::setAnswer_1, uQuestion.getAnswer_1());
