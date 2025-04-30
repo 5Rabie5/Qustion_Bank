@@ -29,22 +29,25 @@ public class QuestionEndpoint {
 //    }
 @GetMapping
 public List<Question> getQuestions(
-        @RequestParam(required = false) String sprache,       // from frontend: language
-        @RequestParam(required = false) String category,      // could be comma-separated list
+        @RequestParam(required = false) String sprache,
+        @RequestParam(required = false) String category,
         @RequestParam(required = false) String tag,
         @RequestParam(required = false) Integer type,
         @RequestParam(required = false) Integer difficulty,
-        @RequestParam(required = false) Integer status) {
-
+        @RequestParam(required = false) Integer status,
+        @RequestParam(required = false) Boolean shortOnly // ✅ new param
+) {
     return questionManger.getQuestions(
             sprache,
             category,
             tag,
             type,
             difficulty,
-            status
+            status,
+            shortOnly // ✅ passed here
     );
 }
+
     @PostMapping("/all")
     public void saveAll(@RequestBody Question[] questions) {
         questionManger.saveAll(questions);

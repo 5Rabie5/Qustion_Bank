@@ -21,9 +21,10 @@ public class QuestionManger {
             String tag,
             Integer type,
             Integer difficulty,
-            Integer status) {
+            Integer timeLimit,
+            Boolean shortOnly) {
 
-        System.out.println("Filter received -> sprache=" + sprache + ", category=" + category + ", type=" + type);
+        System.out.println("Filter received -> sprache=" + sprache + ", category=" + category + ", type=" + type + ", difficulty=" + difficulty);
 
         List<Question> allQuestions = questionRepository.findAll();
         List<Question> filtered = new ArrayList<>();
@@ -34,20 +35,25 @@ public class QuestionManger {
             if (sprache != null && !q.getSprache().equalsIgnoreCase(sprache)) {
                 match = false;
             }
-            if (category != null && !(String.valueOf(q.getCategory()).equals(category))) {
+            if (category != null && !q.getCategory().equalsIgnoreCase(category)) {
                 match = false;
             }
             if (tag != null && (q.getTag() == null || !q.getTag().equalsIgnoreCase(tag))) {
                 match = false;
             }
-            if (type != null && !Objects.equals(q.getType(), type)) {
+            if (type != null && q.getType() != type) {
                 match = false;
             }
-            if (difficulty != null && !Objects.equals(q.getDifficulty(), difficulty)) {
+            if (difficulty != null && q.getDifficulty() != difficulty) {
                 match = false;
             }
-            if (status != null && !Objects.equals(q.getStatus(), status)) {
+            if (timeLimit != null && q.getTimeLimit() != timeLimit) {
                 match = false;
+            }
+            if (shortOnly != null && shortOnly) {
+                if (q.getQuestion() == null || q.getQuestion().split("\\n").length > 2) {
+                    match = false;
+                }
             }
 
             if (match) {
@@ -57,6 +63,7 @@ public class QuestionManger {
 
         return filtered;
     }
+
 
 
 
