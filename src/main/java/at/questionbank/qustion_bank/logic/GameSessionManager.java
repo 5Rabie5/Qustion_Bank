@@ -1,7 +1,9 @@
 package at.questionbank.qustion_bank.logic;
 
 import at.questionbank.qustion_bank.persistence.domain.GameSession;
+import at.questionbank.qustion_bank.persistence.domain.Player;
 import at.questionbank.qustion_bank.persistence.repository.GameSessionRepository;
+import at.questionbank.qustion_bank.persistence.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class GameSessionManager {
 
     private final GameSessionRepository gameSessionRepository;
+    private final PlayerRepository playerRepository;
 
     public GameSession create(GameSession gameSession) {
         return gameSessionRepository.save(gameSession);
@@ -32,5 +35,8 @@ public class GameSessionManager {
 
     public void deleteAll() {
         gameSessionRepository.deleteAll();
+    }
+    public List<Player> getPlayersInGame(String gameSessionId) {
+        return playerRepository.findByGameSessionId(gameSessionId);
     }
 }
