@@ -1,8 +1,11 @@
 package at.questionbank.qustion_bank.persistence.domain;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
 @Document(collection = "players")
 @Data
@@ -18,10 +21,12 @@ public class Player {
     private String language;
     private int score;
 
-    // Store GameSession by its ID (Mongo style)
-    private String gameSessionId;
-    private String avatarUrl;
-    private String color;
-    private String characterId;
+    private String gameSessionId;  // links to GameSession by ID
+
+    // New fields from avatar selection
+    private String avatarUrl;      // custom or character image URL
+    private String color;          // visual player tag
+    private String characterId;    // identifier of selected character
+    private boolean online;
 
 }

@@ -36,4 +36,15 @@ public class PlayerEndpoint {
     public List<Player> getBySession(@PathVariable String gameSessionId) {
         return playerManager.getPlayersInGame(gameSessionId);
     }
+    @PostMapping("/debug-join")
+    public ResponseEntity<String> testJoin(@RequestBody JoinRequest req) {
+        System.out.println("✅ Debug REST Join: " + req.getPlayerName());
+        return ResponseEntity.ok("Received");
+    }
+    @PostMapping("/test-ws")
+    public ResponseEntity<String> wsTest(@RequestBody JoinRequest req) {
+        System.out.println("WS test: " + req.getPlayerName());
+        return ResponseEntity.ok("WS working");
+    }
+
 }
