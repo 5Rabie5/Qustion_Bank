@@ -1,5 +1,5 @@
 package at.questionbank.qustion_bank.logic;
-
+import at.questionbank.qustion_bank.Exception.GameNotFoundException;
 import at.questionbank.qustion_bank.communication.dto.JoinRequest;
 import at.questionbank.qustion_bank.persistence.domain.GameSession;
 import at.questionbank.qustion_bank.persistence.domain.Player;
@@ -10,7 +10,8 @@ import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -24,14 +25,15 @@ public class GameJoinManager {
     private final SessionTracker sessionTracker;
     @MessageMapping("/join")
     public void handleJoin(JoinRequest joinRequest) {
+         final Logger logger = LoggerFactory.getLogger(GameJoinManager.class);
 
+//        GameSession session = gameSessionManager.findById(joinRequest.getGameCode())
+//                .orElse(null);
         GameSession session = gameSessionManager.findById(joinRequest.getGameCode())
-                .orElse(null);
+                .orElseThrow(() -> new GameNotFoundException("Game session with code " + joinRequest.getGameCode() + " not found."));
 
-        if (session == null) {
-            System.out.println("⚠️ GameSession not found for code: " + joinRequest.getGameCode());
-            return;
-        }
+
+
 
         Player player = new Player();
         player.setName(joinRequest.getPlayerName());
@@ -50,6 +52,9 @@ public class GameJoinManager {
         messagingTemplate.convertAndSend("/topic/players/" + joinRequest.getGameCode(), players);
         String sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
         sessionTracker.registerSession(sessionId, saved.getId());
+        // Log the successful join
+        logger.info("✅ WebSocket: Player {} joined game session {}", joinRequest.getPlayerName(), joinRequest.getGameCode());
+
     }
 
 
