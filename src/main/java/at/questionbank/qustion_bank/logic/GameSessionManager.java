@@ -17,12 +17,12 @@ public class GameSessionManager {
     private final GameSessionRepository gameSessionRepository;
     private final PlayerManager playerManager;
 
-
     public GameSession create(GameSession gameSession) {
         System.out.println("🕹️ Creating new game session: " + gameSession.getRoomName());
+        // Set the initial last activity time to the current time
+        gameSession.setLastActivityTime(System.currentTimeMillis());
         return gameSessionRepository.save(gameSession);
     }
-
 
     public Optional<GameSession> findById(String id) {
         return gameSessionRepository.findById(id);
@@ -54,13 +54,23 @@ public class GameSessionManager {
         gameSessionRepository.delete(session);
     }
 
+    // Update last activity time for a session
+    public void updateLastActivityTime(String gameSessionId) {
+        GameSession session = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game session not found"));
+        session.setLastActivityTime(System.currentTimeMillis());
+        gameSessionRepository.save(session);
+    }
+
+    // Scheduled job to clean up inactive sessions
     @Scheduled(fixedDelay = 300_000) // every 5 minutes
     public void cleanInactiveGames() {
+        long timeout = 30 * 60 * 1000; // 30 minutes timeout
         List<GameSession> sessions = findAll();
         for (GameSession session : sessions) {
-            // Check if there are active players before deleting
-            if (playerManager.getPlayersInGame(session.getId()).isEmpty()) {
-                delete(session); // use internal logic
+            // Check if the session is inactive for more than the timeout
+            if (System.currentTimeMillis() - session.getLastActivityTime() > timeout) {
+                delete(session);
                 System.out.println("🕒 Deleted inactive game session: " + session.getId());
             } else {
                 System.out.println("💬 Active game session not deleted: " + session.getId());

@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "game_sessions")
 public class GameSession {
+
     @Id
     public String id;
 
@@ -26,4 +27,16 @@ public class GameSession {
     public String timerMode;
     public Integer secondsPerQuestion;
     public String createdAt;
+
+    // New field to track the last activity timestamp
+    private long lastActivityTime;
+
+    // Getter and setter for lastActivityTime
+    public long getLastActivityTime() {
+        return lastActivityTime;
+    }
+
+    public void setLastActivityTime(long lastActivityTime) {
+        this.lastActivityTime = lastActivityTime;
+    }
 }
