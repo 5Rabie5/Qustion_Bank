@@ -66,10 +66,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
 		<dependency>
@@ -139,21 +135,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-<<<<<<< HEAD
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.modulith</groupId>
-				<artifactId>spring-modulith-bom</artifactId>
-				<version>${spring-modulith.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-
-	</dependencyManagement>
-=======
->>>>>>> d774e81 ( st03 clean)
 
 	<build>
 		<plugins>
@@ -175,7 +156,7 @@
 				<configuration>
 					<excludes>
 						<exclude>
-							<groupId>org.project-lombok</groupId>
+							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
