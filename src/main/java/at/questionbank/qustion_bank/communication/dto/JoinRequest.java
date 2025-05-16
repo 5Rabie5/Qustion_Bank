@@ -1,5 +1,4 @@
 package at.questionbank.qustion_bank.communication.dto;
-
 import lombok.Data;
 
 @Data

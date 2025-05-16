@@ -29,10 +29,10 @@ public class GameSession {
     public String createdAt;
 
     // New field to track the last activity timestamp
-    private long lastActivityTime;
+    private Long lastActivityTime;
 
     // Getter and setter for lastActivityTime
-    public long getLastActivityTime() {
+    public Long getLastActivityTime() {
         return lastActivityTime;
     }
 

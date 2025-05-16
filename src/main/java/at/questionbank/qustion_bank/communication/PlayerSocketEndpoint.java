@@ -1,17 +1,16 @@
 package at.questionbank.qustion_bank.communication;
 
 import at.questionbank.qustion_bank.communication.dto.JoinRequest;
+import at.questionbank.qustion_bank.logic.GameSessionManager;
+import at.questionbank.qustion_bank.logic.SessionTracker;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,45 +19,41 @@ public class PlayerSocketEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(PlayerSocketEndpoint.class);
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final SessionTracker sessionTracker;
 
-    /**
-     * Handles player joining via WebSocket.
-     * Expected destination from client: /app/join
-     */
     @MessageMapping("/join")
-    public void handleJoin(JoinRequest request, SimpMessageHeaderAccessor headers) {
-        logger.info("✅ Player joined via WebSocket: {}", request.getPlayerName());
+    public void handleJoin(JoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
+        logger.info("🚀 Received JoinRequest: {}", request);
+        logger.info("🧠 Headers: {}", headerAccessor.toMap());
 
-        // Broadcast the new player to others in the same game session
-        messagingTemplate.convertAndSend(
-                "/topic/players/" + request.getGameCode(),
-                request
-        );
+        // Safeguard from nulls
+        if (request == null || request.getGameCode() == null || request.getPlayerName() == null) {
+            logger.error("❌ Invalid join request: missing required fields");
+            return;
+        }
 
-        logger.info("🧩 Broadcasting to /topic/players/{}", request.getGameCode());
+        sessionTracker.registerPlayerFromHeader(headerAccessor, request);
+
+        messagingTemplate.convertAndSend("/topic/players/" + request.getGameCode(), request);
     }
 
-    /**
-     * WebSocket connect event handler
-     */
-    @EventListener
-    public void handleWebSocketConnectListener(SessionConnectEvent event) {
-        logger.info("🔌 WebSocket connected: {}", event.getMessage().getHeaders());
-    }
 
-    /**
-     * WebSocket disconnect event handler
-     */
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        logger.info("❌ WebSocket disconnected: sessionId={}", event.getSessionId());
-    }
 
-    /**
-     * Global STOMP error handler for debugging
-     */
+//    @MessageMapping("/join")
+//    public void handleJoin(JoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
+//        logger.info("✅ Player joined: {}", request.getPlayerName());
+//
+//        // Register session to track disconnects
+//        sessionTracker.registerPlayerFromHeader(headerAccessor, request);
+//
+//        // Notify other players in the same game session
+//        messagingTemplate.convertAndSend("/topic/players/" + request.getGameCode(), request);
+//    }
+
+
     @MessageExceptionHandler
-    public void handleError(Throwable exception) {
-        logger.error("❗ WebSocket error: {}", exception.getMessage(), exception);
+    public void handleException(Throwable t) {
+        logger.error("🔥 WebSocket message handling failed: {}", t.getMessage(), t);
     }
-}
+
+    }

@@ -15,37 +15,26 @@ public class PlayerManager {
 
     private final PlayerRepository playerRepository;
 
-    /**
-     * Save or join a player to the game.
-     */
     public Player joinGame(Player player) {
-        return playerRepository.save(player);
+        return playerRepository.save(player); // ✅ already persists to DB
     }
 
-    /**
-     * Retrieve all players by game session ID.
-     */
     public List<Player> getPlayersInGame(String gameSessionId) {
         return playerRepository.findByGameSessionId(gameSessionId);
     }
 
-    /**
-     * Find player by ID.
-     */
     public Optional<Player> findById(String id) {
         return playerRepository.findById(id);
     }
 
-    /**
-     * Delete all players (global).
-     */
+    public Optional<Player> findByGameSessionIdAndName(String sessionId, String name) {
+        return playerRepository.findByGameSessionIdAndName(sessionId, name);
+    }
+
     public void deleteAll() {
         playerRepository.deleteAll();
     }
 
-    /**
-     * Delete all players in a specific game session.
-     */
     @Transactional
     public void deleteByGameSessionId(String gameSessionId) {
         List<Player> players = getPlayersInGame(gameSessionId);
